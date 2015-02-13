@@ -37,14 +37,17 @@ module ActsAsParanoid
         update_all ["#{paranoid_configuration[:column]} = ?", delete_now_value], conditions
       end
 
-      def paranoid_default_scope_sql
+      def paranoid_condition
+        attr = scoped.table[paranoid_column]
+        cond = attr.eq(nil)
         if string_type_with_deleted_value?
-          self.scoped.table[paranoid_column].eq(nil).
-            or(self.scoped.table[paranoid_column].not_eq(paranoid_configuration[:deleted_value])).
-            to_sql
-        else
-          self.scoped.table[paranoid_column].eq(nil).to_sql
+          cond = attr.not_eq(paranoid_configuration[:deleted_value]).or(cond)
         end
+        cond
+      end
+
+      def paranoid_default_scope_sql
+        paranoid_condition.to_sql
       end
 
       def string_type_with_deleted_value?
