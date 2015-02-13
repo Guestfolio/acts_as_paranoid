@@ -58,7 +58,7 @@ ActiveRecord::Relation.send :include, ActsAsParanoid::Relation
 # Push the recover callback onto the activerecord callback list
 ActiveRecord::Callbacks::CALLBACKS.push(:before_recover, :after_recover)
 
- # Add join constraint to joins, Must be included after extend ActsAsParanoid
+# Add join constraint to joins, Must be included after extend ActsAsParanoid
 ActiveRecord::Associations::JoinDependency::JoinAssociation.send :include, ActsAsParanoid::JoinAssociation
 
 # Use with_deleted in preloader build_scope
