@@ -169,8 +169,12 @@ module ActsAsParanoid
     end
 
     def deleted?
-      !(paranoid_value.nil? ||
-        (self.class.string_type_with_deleted_value? && paranoid_value != self.class.delete_now_value))
+      return false if paranoid_value.nil?
+      if self.class.string_type_with_deleted_value?
+        paranoid_value == self.class.delete_now_value
+      else
+        true
+      end
     end
 
     alias_method :destroyed?, :deleted?
