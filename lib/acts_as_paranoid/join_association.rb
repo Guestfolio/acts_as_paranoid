@@ -6,7 +6,7 @@ module ActsAsParanoid
       end
     end
 
-    # Add paranoid_default_scope_sql as conditions when join other table
+    # Add paranoid conditions when joining other tables
     # <t>Blog.joins(:users)</t> would produce
     # <t>select blogs.* from blogs inner join users on users.id = blogs.user_id AND users.deleted_at is NULL</t>
     # ref https://github.com/goncalossilva/acts_as_paranoid/issues/71
@@ -14,7 +14,7 @@ module ActsAsParanoid
       constraint = build_constraint_without_deleted(reflection, table, key, foreign_table, foreign_key)
 
       if reflection.klass.paranoid? && !reflection.options[:with_deleted]
-        constraint = constraint.and(table[reflection.klass.paranoid_column].eq(nil))
+        constraint = reflection.klass.paranoid_condition.and(constraint)
       end
       constraint
     end

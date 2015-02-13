@@ -22,11 +22,7 @@ module ActsAsParanoid
       end
 
       def only_deleted
-        if string_type_with_deleted_value?
-          without_paranoid_default_scope.where("#{paranoid_column_reference} IS ?", paranoid_configuration[:deleted_value])
-        else
-          without_paranoid_default_scope.where("#{paranoid_column_reference} IS NOT ?", nil)
-        end
+        without_paranoid_default_scope.where(paranoid_condition.not)
       end
 
       def delete_all!(conditions = nil)
@@ -43,7 +39,7 @@ module ActsAsParanoid
         if string_type_with_deleted_value?
           cond = attr.not_eq(paranoid_configuration[:deleted_value]).or(cond)
         end
-        cond
+        ParanoidCondition.new(cond)
       end
 
       def paranoid_default_scope_sql
@@ -77,10 +73,10 @@ module ActsAsParanoid
     protected
 
       def without_paranoid_default_scope
-        scope = self.scoped.with_default_scope
-        scope.where_values.delete(paranoid_default_scope_sql)
-
-        scope
+        scoped.with_default_scope.tap { |s|
+          own_paranoid_condition = paranoid_condition
+          s.where_values.delete_if { |cond| cond == own_paranoid_condition }
+        }
       end
     end
 

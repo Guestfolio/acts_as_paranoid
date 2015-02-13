@@ -28,7 +28,7 @@ module ActsAsParanoid
         end
 
         # Re-add ActsAsParanoid default scope conditions manually.
-        if finder_class.unscoped.where(finder_class.paranoid_default_scope_sql).where(relation).exists?
+        if finder_class.unscoped.where(finder_class.paranoid_condition).where(relation).exists?
           record.errors.add(attribute, :taken, options.except(:case_sensitive, :scope).merge(:value => value))
         end
       end
