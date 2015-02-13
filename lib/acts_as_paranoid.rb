@@ -1,4 +1,5 @@
 require 'acts_as_paranoid/core'
+require 'acts_as_paranoid/paranoid_condition'
 require 'acts_as_paranoid/associations'
 require 'acts_as_paranoid/validations'
 require 'acts_as_paranoid/relation'
@@ -33,7 +34,7 @@ module ActsAsParanoid
     include ActsAsParanoid::Core
 
     # Magic!
-    default_scope { where(paranoid_default_scope_sql) }
+    default_scope { where(paranoid_condition) }
 
     if paranoid_configuration[:column_type] == 'time'
       scope :deleted_inside_time_window, lambda {|time, window|
